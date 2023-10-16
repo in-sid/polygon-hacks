@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Line-Polygon Intersection</title>
+</head>
+<body>
+
+<h2>Calculate Intersection</h2>
+
+<label for="source">Source Leg (Lat, Lng):</label>
+<input type="text" id="source" value="28.4210705,77.1511459">
+<br><br>
+<label for="destination">Destination leg (Lat, Lng):</label>
+<input type="text" id="destination" value="28.4074821,77.1853065">
+<br><br>
+<label for="polygonCoords">Polygon Coordinates (comma-separated Lat, Lng pairs):</label>
+<textarea id="polygonCoords">
+28.418636,77.1620679
+28.4138002,77.1601589
+28.4097236,77.1600302
+28.4070813,77.1622618
+28.4066283,77.1666821
+28.4073077,77.1702441
+28.4086523,77.1734619
+28.4135782,77.1786761
+28.4194664,77.1745563
+28.4200703,77.1682477
+28.418636,77.1620679</textarea>
+<button onclick="calculateIntersection()">Calculate</button>
+
+<p id="result"></p>
+<p id="intersectionPoints"></p>
+
+<script>
+function calculateIntersection() {
+  const sourceInput = document.getElementById("source").value.split(',').map(parseFloat);
+  const destInput = document.getElementById("destination").value.split(',').map(parseFloat);
+  const polygonCoordsInput = document.getElementById("polygonCoords").value.split('\n')
+                            .map(coordPair => coordPair.split(',').map(parseFloat));
+
+  const sourceLat = sourceInput[0];
+  const sourceLng = sourceInput[1];
+  const destLat = destInput[0];
+  const destLng = destInput[1];
+
+  const intersection = checkIntersection(sourceLat, sourceLng, destLat, destLng, polygonCoordsInput);
+
+  const resultElement = document.getElementById("result");
+  const intersectionPointsElement = document.getElementById("intersectionPoints");
+
+  if (intersection) {
+    resultElement.textContent = "Yes";
+    intersectionPointsElement.textContent = "Intersection Points: " + JSON.stringify(intersection);
+  } else {
+    resultElement.textContent = "No";
+    intersectionPointsElement.textContent = "";
+  }
+}
+
+function checkIntersection(sourceLat, sourceLng, destLat, destLng, polygonCoords) {
+  const polygon = polygonCoords.map(coordPair => ({ lat: coordPair[0], lng: coordPair[1] }));
+  
+  for (let i = 0; i < polygon.length; i++) {
+    const currentVertex = polygon[i];
+    const nextVertex = polygon[(i + 1) % polygon.length];
+
+    if (doIntersect(sourceLat, sourceLng, destLat, destLng, currentVertex.lat, currentVertex.lng, nextVertex.lat, nextVertex.lng)) {
+      return [{ lat: sourceLat, lng: sourceLng }, { lat: destLat, lng: destLng }];
+    }
+  }
+  
+  return null;
+}
+
+function doIntersect(x1, y1, x2, y2, x3, y3, x4, y4) {
+  const den = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
+  
+  if (den === 0) return false;
+  
+  const t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / den;
+  const u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / den;
+  
+  return t >= 0 && t <= 1 && u >= 0 && u <= 1;
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Decode Polylines to Lat-Long List</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mapbox-polyline/1.1.1/polyline.min.js"></script>
+</head>
+<body>
+
+<h2>Decode Polylines to Lat-Long List</h2>
+
+<h3>Encoded Polylines (One Vertex per Line)</h3>
+
+<textarea id="encodedPolylines" rows="10" cols="50">
+</textarea>
+<br><br>
+<button onclick="decodePolylines()">Decode</button>
+
+<h3>Lat-Long List</h3>
+
+<textarea id="latLongList" readonly rows="10" cols="50">
+</textarea>
+
+<script>
+function decodePolylines() {
+  const encodedPolylines = document.getElementById('encodedPolylines').value;
+  const polylineLines = encodedPolylines.trim().split('\n');
+
+  const latLongListElement = document.getElementById('latLongList');
+  latLongListElement.value = '';
+
+  for (const line of polylineLines) {
+    const decodedPath = polyline.decode(line);
+
+    for (const point of decodedPath) {
+      latLongListElement.value += `${point[0]}, ${point[1]}\n`;
+    }
+  }
+}
+</script>
+
+</body>
+</html>

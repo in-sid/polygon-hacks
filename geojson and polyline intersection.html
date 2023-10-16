@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Polyline Passes Through GeoJSON Check</title>
+</head>
+<body>
+
+<h2>Polyline Passes Through GeoJSON Check</h2>
+
+<div>
+    <label for="geojson">Enter GeoJSON:</label><br>
+    <textarea id="geojson" rows="5" cols="50"></textarea>
+</div>
+
+<div>
+    <label for="polyline">Enter Polyline (Comma-separated lat,lng pairs):</label><br>
+    <input type="text" id="polyline" style="width: 100%;">
+</div>
+
+<button onclick="checkPolyline()">Check</button>
+
+<p id="result"></p>
+
+<script>
+    function checkPolyline() {
+        var geojsonInput = document.getElementById("geojson").value;
+        var polylineInput = document.getElementById("polyline").value;
+
+        var geojson = JSON.parse(geojsonInput);
+        var polylinePoints = polylineInput.split(',').map(function (pair) {
+            var latLng = pair.split(',');
+            return [parseFloat(latLng[0]), parseFloat(latLng[1])];
+        });
+
+        var pointInsideGeoJSON = false;
+        if (geojson.type === 'Feature' && geojson.geometry.type === 'Polygon') {
+            var polygonCoordinates = geojson.geometry.coordinates[0];
+            pointInsideGeoJSON = isPointInsidePolygon(polylinePoints, polygonCoordinates);
+        }
+
+        var resultElement = document.getElementById("result");
+        if (pointInsideGeoJSON) {
+            resultElement.innerHTML = "The polyline passes through the given GeoJSON location.";
+        } else {
+            resultElement.innerHTML = "The polyline does not pass through the given GeoJSON location.";
+        }
+    }
+
+    function isPointInsidePolygon(point, polygon) {
+        var x = point[0], y = point[1];
+        var isInside = false;
+        for (var i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+            var xi = polygon[i][0], yi = polygon[i][1];
+            var xj = polygon[j][0], yj = polygon[j][1];
+
+            var intersect = ((yi > y) !== (yj > y)) &&
+                (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+            if (intersect) isInside = !isInside;
+        }
+        return isInside;
+    }
+</script>
+
+</body>
+</html>
