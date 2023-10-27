@@ -11,6 +11,8 @@
     <input type="text" id="latitude" name="latitude" required><br>
     <label for="longitude">Longitude:</label>
     <input type="text" id="longitude" name="longitude" required><br>
+    <label for="radius">Radius (meters):</label>
+    <input type="text" id="radius" name="radius" required><br>
     <button type="button" id="calculate-button">Calculate Polygon Coordinates</button>
   </form>
   
@@ -20,18 +22,19 @@
     document.getElementById('calculate-button').addEventListener('click', function () {
       var latitude = parseFloat(document.getElementById('latitude').value);
       var longitude = parseFloat(document.getElementById('longitude').value);
+      var radius = parseFloat(document.getElementById('radius').value);
 
       var polygonCoords = [];
       for (var i = 0; i < 360; i += 10) {
         var angle = i * (Math.PI / 180);
-        var newX = latitude + (500 / 111320) * Math.cos(angle);
-        var newY = longitude + (500 / (111320 * Math.cos(latitude * (Math.PI / 180)))) * Math.sin(angle);
+        var newX = latitude + (radius / 111320) * Math.cos(angle);
+        var newY = longitude + (radius / (111320 * Math.cos(latitude * (Math.PI / 180)))) * Math.sin(angle);
         polygonCoords.push({ lat: newX, lng: newY });
       }
 
       var polygonCoordinatesText = 'Polygon Coordinates:<br>';
       for (var i = 0; i < polygonCoords.length; i++) {
-        polygonCoordinatesText += '(' + polygonCoords[i].lat.toFixed(6) + ', ' + polygonCoords[i].lng.toFixed(6) + ')<br>';
+        polygonCoordinatesText += polygonCoords[i].lat.toFixed(6) + ', ' + polygonCoords[i].lng.toFixed(6) + '<br>';
       }
 
       document.getElementById('polygon-coordinates').innerHTML = polygonCoordinatesText;
