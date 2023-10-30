@@ -25,7 +25,7 @@
       var radius = parseFloat(document.getElementById('radius').value);
 
       var polygonCoords = [];
-      for (var i = 0; i < 360; i += 10) {
+      for (var i = 0; i < 360; i += 5) {
         var angle = i * (Math.PI / 180);
         var newX = latitude + (radius / 111320) * Math.cos(angle);
         var newY = longitude + (radius / (111320 * Math.cos(latitude * (Math.PI / 180)))) * Math.sin(angle);
@@ -34,7 +34,7 @@
 
       var polygonCoordinatesText = 'Polygon Coordinates:<br>';
       for (var i = 0; i < polygonCoords.length; i++) {
-        polygonCoordinatesText += polygonCoords[i].lat.toFixed(6) + ', ' + polygonCoords[i].lng.toFixed(6) + '<br>';
+        polygonCoordinatesText += polygonCoords[i].lat.toFixed(9) + ', ' + polygonCoords[i].lng.toFixed(9) + '<br>';
       }
 
       document.getElementById('polygon-coordinates').innerHTML = polygonCoordinatesText;
